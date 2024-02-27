@@ -59,6 +59,8 @@ def createOrder(request):
                 quantity=i.get("quantity"),
                 imageId=i.get("imageId"),
                 userId=user,
+                restaurantId=i.get("restaurantId"),
+                # restaurntId=data["restaurant"].get("id"),
                 # "userId": user.id,
             )
             order.save()

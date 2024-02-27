@@ -4,6 +4,9 @@ import { request } from "@/lib/Request";
 import { useUserContext } from "@/context/User";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
+import { ArrowRightCircle, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Loading from "./Loading";
 
 interface OrderType {
   id: number;
@@ -17,6 +20,10 @@ interface OrderType {
 
 const Orders = () => {
   const [orderss, setOrderss] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+
   // const { orders } = useUserContext();
 
   useEffect(() => {
@@ -56,19 +63,28 @@ const Orders = () => {
       url: `orders/${order.id}`,
       headers: { "Content-Type": "application/json" },
     }).then((repsonse) => {
+      setLoading(true);
+
       console.log(repsonse.data);
       updateOrders();
     });
   };
-
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 4000);
+    window.scrollTo(0, 0);
+  }, [loading]);
   console.log(orderss);
   const totalPrice =
     orderss.length > 0 &&
     orderss.map((order: OrderType) => order.price).reduce((a, b) => a + b) /
       100;
-  const gst = (totalPrice as number) * 0.18;
+  const gst = (totalPrice as number) * 0.1;
   const grossed = (totalPrice as number) + gst;
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <div className="flex w-full items-center justify-evenly flex-col lg:flex-row  ">
       <div className="flex flex-col  items-center  max-w-full p-4">
         <ScrollArea className="pt-24 h-[90svh]">
@@ -77,55 +93,66 @@ const Orders = () => {
               <Order order={order} key={order.id} deleteOrder={deleteOrder} />
             ))
           ) : (
-            <h1>No Orders Found</h1>
+            <div className="h-full flex flex-col space-y-10 justify-center items-center w-full">
+              <h1>No Orders Found</h1>
+              <Button
+                onClick={() => navigate("/dashboard")}
+                className="space-x-2"
+              >
+                <p>Go to Menu</p>
+                <ArrowRightCircle />
+              </Button>
+            </div>
           )}
         </ScrollArea>
       </div>
       {/* <Order order={orders} key={orders.id} /> */}
       {/* Summary of order price */}
-      <div className="flex justify-center  flex-col h-auto w-full lg:w-auto    items-center border p-8">
-        <div className="flex flex-col space-y-1 ">
-          <h1 className="text-3xl font-bold p-3 border-b-2 mb-3">
-            Order Summary
-          </h1>
-          {orderss.length > 0 && (
-            <div className="flex flex-col p-4">
-              <div className="flex">
-                <h1 className="text-xl font-medium">Total Price : </h1>
-                <h1 className="text-xl font-light text-gray-500 px-2 ">
-                  {new Intl.NumberFormat("en-IN", {
-                    style: "currency",
-                    currency: "INR",
-                  }).format(totalPrice as number)}
-                </h1>
+      {orderss.length > 0 && (
+        <div className="flex justify-center  flex-col h-auto w-full lg:w-auto    items-center border p-8">
+          <div className="flex flex-col space-y-1 ">
+            <h1 className="text-3xl font-bold p-3 border-b-2 mb-3">
+              Order Summary
+            </h1>
+            {orderss.length > 0 && (
+              <div className="flex flex-col p-4">
+                <div className="flex">
+                  <h1 className="text-xl font-medium">Total Price : </h1>
+                  <h1 className="text-xl font-light text-gray-500 px-2 ">
+                    {new Intl.NumberFormat("en-IN", {
+                      style: "currency",
+                      currency: "INR",
+                    }).format(totalPrice as number)}
+                  </h1>
+                </div>
+                <div className="flex">
+                  <h1 className="text-xl font-medium">GST : </h1>
+                  <h1 className="text-xl font-light px-2 ">
+                    {new Intl.NumberFormat("en-IN", {
+                      style: "currency",
+                      currency: "INR",
+                    }).format(gst)}
+                  </h1>
+                </div>
               </div>
-              <div className="flex">
-                <h1 className="text-xl font-medium">GST : </h1>
-                <h1 className="text-xl font-light px-2 ">
-                  {new Intl.NumberFormat("en-IN", {
-                    style: "currency",
-                    currency: "INR",
-                  }).format(gst)}
-                </h1>
-              </div>
-            </div>
-          )}
-        </div>
-        <hr className="m-3 border w-full border-dashed" />
+            )}
+          </div>
+          <hr className="m-3 border w-full border-dashed" />
 
-        <div className="flex">
-          <h1 className="text-2xl font-bold">Total : </h1>
-          <h1 className="text-2xl font-bold px-2 ">
-            {totalPrice
-              ? new Intl.NumberFormat("en-IN", {
-                  style: "currency",
-                  currency: "INR",
-                }).format(grossed)
-              : "0"}
-          </h1>
+          <div className="flex">
+            <h1 className="text-2xl font-bold">Total : </h1>
+            <h1 className="text-2xl font-bold px-2 ">
+              {totalPrice
+                ? new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                  }).format(grossed)
+                : "0"}
+            </h1>
+          </div>
+          <Button className="mt-5 w-full">Checkout</Button>
         </div>
-        <Button className="mt-5 w-full">Checkout</Button>
-      </div>
+      )}
     </div>
   );
 };
