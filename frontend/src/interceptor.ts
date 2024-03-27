@@ -7,8 +7,7 @@ axios.interceptors.response.use(
     console.log(error);
     if (
       // error.response.status === 401 ||
-      error.name === "AxiosErrorr" &&
-      !refresh
+      (error.name === "AxiosErrorr" && !refresh)
     ) {
       refresh = true;
       console.log(localStorage.getItem("refresh_token"));

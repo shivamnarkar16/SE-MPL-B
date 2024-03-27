@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { User, useUserContext } from "@/context/User";
 import { request } from "@/lib/Request";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import Loading from "./Loading";
 
 const RestaurantMenu = () => {
   const { id } = useParams(); // call useParams and get value of restaurant id using object destructuring
@@ -121,9 +122,7 @@ const RestaurantMenu = () => {
   // console.log(restaurant);
 
   return loading ? (
-    <div className="h-screen w-full flex items-center justify-center">
-      <Loader2 className="animate-spin " />
-    </div>
+    <Loading />
   ) : !restaurant ? (
     <div className="h-screen w-full flex items-center justify-center">
       Restaurant Not Found :(

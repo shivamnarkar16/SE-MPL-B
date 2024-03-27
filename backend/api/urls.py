@@ -12,4 +12,6 @@ urlpatterns = [
     path("register/", views.createUser, name="Create User"),
     # path("sendOrder/", views.sendOrderData, name="OrderData"),
     path("orders/<str:pk>/", views.deleteOrder, name="OrderDetail"),
+    path("razorpay/", views.payOrderView, name="RazorPay"),
+    path("transaction/", views.transactionView, name="Transaction"),
 ]

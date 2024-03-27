@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import Order
+from app.models import Order, Transaction
 from django.contrib.auth.models import User
 
 
@@ -20,3 +20,18 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
+
+
+class CreateOrderSerializer(serializers.Serializer):
+    amount = serializers.FloatField()
+    currency = serializers.CharField()
+
+
+# Path: api/validations.py
+
+
+class TransactionSerailzer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Transaction
+        fields = ["payment_id", "order_id", "signature", "amount"]

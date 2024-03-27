@@ -2,12 +2,15 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from app.models import Order
 from django.http import JsonResponse
-from .serializers import OrderSerializer
+from .serializers import CreateOrderSerializer, TransactionSerailzer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 import json
 from django.contrib.auth.models import User
+from api.razorpay.main import RazorPayClient
+
+rz_client = RazorPayClient()
 
 
 @api_view(["GET"])
@@ -124,3 +127,44 @@ def logout(request):
         return Response(status=status.HTTP_205_RESET_CONTENT)
     except:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def payOrderView(request):
+    create_order_serializer = CreateOrderSerializer(data=request.data)
+    if create_order_serializer.is_valid():
+        
+        order_response = rz_client.create_order(
+            amount=request.data["amount"],
+            currency=create_order_serializer.validated_data["currency"],
+        )
+        return Response(order_response, status=status.HTTP_201_CREATED)
+    else:
+        return Response(
+            create_order_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@api_view(["POST"])
+def transactionView(request):
+    try:
+        transaction_serializer = TransactionSerailzer(data=request.data)
+        if transaction_serializer.is_valid():
+            rz_client.verify_payment(
+                payment_id=transaction_serializer.validated_data["payment_id"],
+                order_id=transaction_serializer.validated_data["order_id"],
+                signature=transaction_serializer.validated_data["signature"],
+            )
+            transaction_serializer.save()
+            response = {
+                "status_code": status.HTTP_201_CREATED,
+                "message": "Transaction Created Successfully",
+                "data": transaction_serializer.data,
+            }
+            return Response(response, status=status.HTTP_201_CREATED)
+        else:
+            return Response(
+                transaction_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+    except Exception as e:
+        return Response(e, status=status.HTTP_400_BAD_REQUEST)

@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RestaurantMenu from "./components/RestaurantMenu";
 import Orders from "./components/Orders";
+import Success from "./components/Success";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="success" element={<Success />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/restaurant/:id" element={<RestaurantMenu />} />
           </Route>

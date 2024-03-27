@@ -30,8 +30,8 @@ const cities = [
     label: "Mumbai",
   },
   {
-    value: "Dockyard Road",
-    label: "Dockyard Road",
+    value: "Mazgaon",
+    label: "Mazgaon",
   },
   {
     value: "Churchgate",
@@ -198,20 +198,33 @@ const Dashboard = () => {
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(data);
     setCity(data.city);
+    setIsLoading(true);
     getCoordinates(data.city);
   }
 
   const getCoordinates = async (city: string) => {
     try {
-      console.log(city);
-      const data = await fetch(`https://geocode.maps.co/search?q=${city}`);
+      if (city !== "") {
+        console.log(city);
+        const data = await fetch(`https://geocode.maps.co/search?q=${city}`);
 
-      const json = await data.json();
-      const lat = json[0].lat;
-      const lon = json[0].lon;
-      console.log(latitude, longitude);
-      setLatitude(lat);
-      setLongitude(lon);
+        const json = await data.json();
+        const lat = json[0].lat;
+        const lon = json[0].lon;
+        console.log(latitude, longitude);
+        setLatitude(lat);
+        setLongitude(lon);
+      } else {
+        console.log(city);
+        const data = await fetch(`https://geocode.maps.co/search?q=${city}`);
+
+        const json = await data.json();
+        const lat = json[0].lat;
+        const lon = json[0].lon;
+        console.log(latitude, longitude);
+        setLatitude(lat);
+        setLongitude(lon);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -328,7 +341,7 @@ const Dashboard = () => {
                     <PopoverContent className="w-[200px] p-0">
                       <Command>
                         <CommandInput placeholder="Search city..." />
-                        <CommandEmpty>No language found.</CommandEmpty>
+                        <CommandEmpty>No City found.</CommandEmpty>
                         <CommandGroup>
                           {cities.map((city) => (
                             <CommandItem

@@ -7,7 +7,7 @@ import { request } from "@/lib/Request";
 export const Logout = () => {
   const { logout } = useUserContext();
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     (async () => {
       try {

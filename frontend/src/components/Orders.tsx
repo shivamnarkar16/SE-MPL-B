@@ -7,6 +7,8 @@ import { ScrollArea } from "./ui/scroll-area";
 import { ArrowRightCircle, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Loading from "./Loading";
+import useRazorpay from "react-razorpay";
+import food from "@/assets/food.jpg";
 
 interface OrderType {
   id: number;
@@ -23,6 +25,7 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+  const [Razorpay] = useRazorpay();
 
   // const { orders } = useUserContext();
 
@@ -82,12 +85,101 @@ const Orders = () => {
       100;
   const gst = (totalPrice as number) * 0.1;
   const grossed = (totalPrice as number) + gst;
+
+  const complete_payment = (
+    orderid: string,
+    paymentid: string,
+    sign: string
+  ) => {
+    request({
+      method: "POST",
+      url: "transaction",
+      headers: { "Content-Type": "application/json" },
+      data: {
+        payment_id: paymentid,
+        order_id: orderid,
+        signature: sign,
+        amount: parseInt(grossed),
+      },
+    })
+      .then((response: any) => {
+        console.log(response.data);
+        setOrderss([]);
+        setLoading(true);
+        // updateOrders();
+        // navigate("/success");
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
+  const checkOut = () => {
+    request({
+      method: "POST",
+      url: "razorpay",
+      headers: { "Content-Type": "application/json" },
+      data: { amount: parseFloat(grossed.toExponential(5)), currency: "INR" },
+    })
+      .then((response) => {
+        console.log(response);
+        const order_id = response.data.id;
+        const options = {
+          key: "rzp_test_ayUd0ehWxUbVZE", // Enter the Key ID generated from the Dashboard
+          amount: "505050", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+          currency: "INR",
+          name: "CraveWave",
+          description: "Test Transaction",
+          image:
+            "https://www.adobe.com/content/dam/cc/us/en/creativecloud/design/discover/mascot-logo-design/mascot-logo-design_fb-img_1200x800.jpg",
+          order_id: order_id, //This is a sample Order ID. Pass the `id` obtained in the response of createOrder().
+          handler: function (response: any) {
+            console.log(response);
+            complete_payment(
+              response.razorpay_order_id,
+              response.razorpay_payment_id,
+              response.razorpay_signature
+            );
+          },
+          prefill: {
+            name: "Shivam",
+            email: "contact@cravewave.com",
+            contact: "9999999999",
+          },
+          notes: {
+            address: "Razorpay Corporate Office",
+          },
+          theme: {
+            color: "#010101",
+          },
+        };
+
+        const rzp1 = new Razorpay(options);
+
+        rzp1.on("payment.failed", function (response) {
+          alert(response.error.code);
+          alert(response.error.description);
+          alert(response.error.source);
+          alert(response.error.step);
+          alert(response.error.reason);
+          alert(response.error.metadata.order_id);
+          alert(response.error.metadata.payment_id);
+        });
+
+        rzp1.open();
+        // updateOrders();
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
   return loading ? (
     <Loading />
   ) : (
-    <div className="flex w-full items-center justify-evenly flex-col lg:flex-row  ">
+    <div className="flex w-full h-screen items-center justify-evenly flex-col lg:flex-row  ">
       <div className="flex flex-col  items-center  max-w-full p-4">
-        <ScrollArea className="pt-24 h-[90svh]">
+        <ScrollArea className=" md:h-[80svh] h-[60svh]">
           {orderss.length ? (
             orderss?.map((order: OrderType) => (
               <Order order={order} key={order.id} deleteOrder={deleteOrder} />
@@ -150,7 +242,9 @@ const Orders = () => {
                 : "0"}
             </h1>
           </div>
-          <Button className="mt-5 w-full">Checkout</Button>
+          <Button className="mt-5 w-full" onClick={checkOut}>
+            Checkout
+          </Button>
         </div>
       )}
     </div>
