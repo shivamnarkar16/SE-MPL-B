@@ -14,4 +14,5 @@ urlpatterns = [
     path("orders/<str:pk>/", views.deleteOrder, name="OrderDetail"),
     path("razorpay/", views.payOrderView, name="RazorPay"),
     path("transaction/", views.transactionView, name="Transaction"),
+    path("paid/", views.updatePaidOrders, name="PaidOrder"),
 ]

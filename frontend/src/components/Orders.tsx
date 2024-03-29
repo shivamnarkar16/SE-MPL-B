@@ -18,6 +18,7 @@ interface OrderType {
   imageId: string;
   isVeg: boolean;
   table?: number;
+  paid: boolean;
 }
 
 const Orders = () => {
@@ -60,7 +61,7 @@ const Orders = () => {
       console.log("not auth");
     }
   };
-  const deleteOrder = async (order) => {
+  const deleteOrder = async (order: any) => {
     await request({
       method: "DELETE",
       url: `orders/${order.id}`,
@@ -81,8 +82,9 @@ const Orders = () => {
   console.log(orderss);
   const totalPrice =
     orderss.length > 0 &&
-    orderss.map((order: OrderType) => order.price).reduce((a, b) => a + b) /
-      100;
+    orderss
+      .map((order: OrderType) => (!order.paid ? order.price : 0))
+      .reduce((a, b) => a + b) / 100;
   const gst = (totalPrice as number) * 0.1;
   const grossed = (totalPrice as number) + gst;
 
@@ -104,9 +106,17 @@ const Orders = () => {
     })
       .then((response: any) => {
         console.log(response.data);
-        setOrderss([]);
+        const orderArray: Array<unknown> = [];
+        // setOrderss([]);
         setLoading(true);
-        // updateOrders();
+        orderss.map((order: any) => {
+          orderArray.push({
+            order_id: order.id,
+            transaction_id: response.data.data.payment_id,
+          });
+        });
+        paidOrders(orderArray);
+        updateOrders();
         // navigate("/success");
       })
       .catch((e) => {
@@ -167,9 +177,25 @@ const Orders = () => {
         });
 
         rzp1.open();
+
         // updateOrders();
       })
       .catch((e) => {
+        console.log(e);
+      });
+  };
+
+  const paidOrders = (data1: any) => {
+    request({
+      method: "POST",
+      url: "paid",
+      headers: { "Content-Type": "application/json" },
+      data: { orderId: data1 },
+    })
+      .then((response: any) => {
+        console.log(response.data);
+      })
+      .catch((e: Error) => {
         console.log(e);
       });
   };
@@ -200,7 +226,7 @@ const Orders = () => {
       </div>
       {/* <Order order={orders} key={orders.id} /> */}
       {/* Summary of order price */}
-      {orderss.length > 0 && (
+      {orderss.length > 0 && totalPrice !== 0 && (
         <div className="flex justify-center  flex-col h-auto w-full lg:w-auto    items-center border p-8">
           <div className="flex flex-col space-y-1 ">
             <h1 className="text-3xl font-bold p-3 border-b-2 mb-3">

@@ -1,10 +1,11 @@
 import { IMG_CDN_URL } from "@/lib/Constants";
 import { cn } from "@/lib/utils";
-import { Circle, Trash, Triangle } from "lucide-react";
+import { Check, Circle, Trash, Triangle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { request } from "@/lib/Request";
 import { Link } from "react-router-dom";
+import { Badge } from "./ui/badge";
 
 interface Order {
   id: number;
@@ -15,6 +16,7 @@ interface Order {
   isVeg: boolean;
   table?: number;
   restaurantId: number;
+  paid: boolean;
 }
 
 export const Order = ({
@@ -29,12 +31,21 @@ export const Order = ({
   return (
     <div key={order.id} className="m-2">
       <div className="p-4 flex relative lg:flex-row rounded-lg hover:bg-slate-300 dark:hover:bg-slate-800 transition  flex-col border mx-auto w-[50vw] justify-between ">
-        <Button
-          onClick={() => deleteOrder(order)}
-          className="w-12 self-end right-2 top-2 bg-rose-600 dark:bg-rose-900 dark:text-white h-12 absolute"
-        >
-          <Trash />
-        </Button>
+        {order.paid ? (
+          <Badge
+            variant={"default"}
+            className="absolute top-2 right-2 bg-green-300 dark:bg-green-700 text-md dark:text-white"
+          >
+            <Check />
+          </Badge>
+        ) : (
+          <Button
+            onClick={() => deleteOrder(order)}
+            className="w-12 self-end right-2 top-2 bg-rose-600 dark:bg-rose-900 dark:text-white h-12 absolute"
+          >
+            <Trash />
+          </Button>
+        )}
         <Link
           to={`/restaurant/${order.restaurantId}`}
           className="flex lg:flex-row flex-col justify-between w-full "

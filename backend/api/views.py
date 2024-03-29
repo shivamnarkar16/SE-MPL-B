@@ -133,7 +133,6 @@ def logout(request):
 def payOrderView(request):
     create_order_serializer = CreateOrderSerializer(data=request.data)
     if create_order_serializer.is_valid():
-        
         order_response = rz_client.create_order(
             amount=request.data["amount"],
             currency=create_order_serializer.validated_data["currency"],
@@ -168,3 +167,23 @@ def transactionView(request):
             )
     except Exception as e:
         return Response(e, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def updatePaidOrders(request):
+    try:
+        data = request.data
+        for i in data["orderId"]:
+            order = Order.objects.get(id=i.get("order_id"))
+            order.paid = True
+            order.payment_id = i.get("transaction_id")
+            order.save()
+        print(data)
+        return Response({"message": "Successfully"})
+    except Exception as e:
+        return Response(
+            {"message": "Error Occured : " + e}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+# order_Ns8YSuuR3yhFGW
