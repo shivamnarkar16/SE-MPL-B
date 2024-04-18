@@ -6,7 +6,7 @@ const Home = () => {
       >
         <div className="   h-1/2 flex flex-col justify-center p-4">
           <h1 className="md:text-6xl text-4xl font-bold tracking-tighter ">
-            Welcome to CraveWave
+            Welcome to DineSmart
           </h1>
           <p className="md:text-xl text-md mt-4 dark:text-white text-black">
             You can order food from here

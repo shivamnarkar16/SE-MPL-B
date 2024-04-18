@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from app.models import Order
+from app.models import Order, Profile
 from django.http import JsonResponse
 from .serializers import CreateOrderSerializer, TransactionSerailzer
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +8,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 import json
 from django.contrib.auth.models import User
+from django.dispatch import receiver
 from api.razorpay.main import RazorPayClient
+import requests
 
 rz_client = RazorPayClient()
 
@@ -79,13 +81,17 @@ def createOrder(request):
 @api_view(["GET"])
 # @permission_classes([IsAuthenticated])
 def getUserDetails(request):
-    user = request.user
+    profile = request.user.profile
     return Response(
         {
-            "username": user.username,
-            "email": user.email,
-            "id": user.id,
-            "isSuperUser": user.is_superuser,
+            "username": profile.user.username,
+            "email": profile.user.email,
+            "address": profile.address,
+            "id": profile.user.id,
+            "is_superuser": profile.user.is_superuser,
+            "city": profile.city,
+            "latitude": profile.latitude,
+            "longitude": profile.longitude,
         }
     )
 
@@ -100,21 +106,60 @@ def deleteOrder(request, pk):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["POST"])
-def createUser(request):
-    data = request.data
-    try:
-        user = User.objects.create_user(
-            data["username"], data["email"], data["password"]
-        )
-        user.save()
-        if not user:
-            raise Exception("something went wrong with the DB!")
-        return Response({"message": "Successfully"})
-    except:
-        return Response(
-            {"message": "Error Occured"}, status=status.HTTP_400_BAD_REQUEST
-        )
+@api_view(["POST"])  # or any other HTTP method you prefer
+def create_user_profile_api(request):
+    if request.method == "POST":
+        data = request.data
+        # Logic for creating a user profile when a User object is created
+        # This function will be called whenever a User object is saved
+        try:
+            user = User.objects.create(username=data["username"], email=data["email"])
+            user.set_password(data["password"])
+            user.save()
+
+            # Create a profile for the user
+            profile = Profile.objects.create(user=user)
+            address = data["city"]
+            profile.address = data["address"]
+            profile.city = data["city"]
+            if address:
+                # Make a request to the Nominatim API
+                response = requests.get(
+                    "https://nominatim.openstreetmap.org/search",
+                    params={"q": address, "format": "json"},
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+                    if data:
+                        # Extract latitude and longitude from the response
+                        latitude = float(data[0]["lat"])
+                        longitude = float(data[0]["lon"])
+                        profile.latitude = latitude
+                        profile.longitude = longitude
+                        profile.save()
+                        return JsonResponse(
+                            {"message": "Registered Successful"}, safe=False, status=201
+                        )
+                        print(latitude, longitude)
+                    else:
+                        return JsonResponse(
+                            {"error": "No results found for the provided address"},
+                            status=400,
+                        )
+                else:
+                    return JsonResponse(
+                        {"error": "Failed to retrieve geocoding data"}, status=500
+                    )
+            else:
+                return JsonResponse(
+                    {"error": "Address parameter is missing"}, status=400
+                )
+
+            # Return a success response
+
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
@@ -125,8 +170,8 @@ def logout(request):
         token = RefreshToken(refresh_token)
         token.blacklist()
         return Response(status=status.HTTP_205_RESET_CONTENT)
-    except:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
@@ -186,4 +231,115 @@ def updatePaidOrders(request):
         )
 
 
-# order_Ns8YSuuR3yhFGW
+@api_view(["GET"])
+def getAllOrders(request):
+    try:
+        orders = Order.objects.all()
+        return JsonResponse({"data": list(reversed(orders.values()))}, safe=False)
+
+    except Exception as e:
+        return Response(
+            {"message": "Error Occured : " + str(e)}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@api_view(["GET"])
+def getAllPayments(request):
+    try:
+        payments = rz_client.get_all_payments()
+        return Response(payments, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"message": "Error Occured : " + str(e)}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@api_view(["GET"])
+def get_payment_details():
+    # Logic for fetching payment details
+    return "Payment details"
+
+
+@api_view(["PUT"])
+def updateOrderStatus(request, pk):
+    try:
+        order = Order.objects.get(id=pk)
+        order.process = True
+        order.save()
+        return Response({"message": "Successfully"})
+    except Exception as e:
+        return Response(
+            {"message": "Error Occured : " + str(e)}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+def track_order(input_text):
+    # Logic for tracking order status
+    return "Order status"
+
+
+@api_view(["POST"])
+# Send a GET request to the URL
+def chatbot(request):
+    data = request.data
+    # url = "https://instafood-server-7ayg.vercel.app/api/restaurants?lat=12.9351929&lng=77.62448069999999"
+    url = data["url"]
+    # print(data["action"])
+    action = data["action"]
+    finalRestaurant = []
+
+    response = requests.get(url)
+    if response.status_code == 200:
+        restaurants_data = json.loads(response.text)["data"]["cards"][1]["card"][
+            "card"
+        ]["gridElements"]["infoWithStyle"]["restaurants"]
+        # print(restaurants_data)
+    else:
+        print("Failed to fetch data:", response.status_code)
+
+    def get_restaurant_details(name):
+
+        for restaurant in restaurants_data:
+            restaurant_name = restaurant["info"]["name"].lower()
+            if restaurant_name.startswith(name.lower()):
+                print("GET Request ")
+                return restaurant["info"]
+        return None
+
+    while True:
+        if data["action"] == "hello":
+            return JsonResponse({"message": "Hello how r u ? Fine thank you"})
+        elif data["action"] == "bye":
+            return JsonResponse({"message": "Good Bye! Have a nice day"})
+            break
+
+        elif data["action"] == "get_restaurant":
+            restaurant = get_restaurant_details(data["message"])
+            if restaurant:
+                print("GET Restaurant: ")
+                return JsonResponse(restaurant, safe=False)
+            else:
+                return JsonResponse("Restaurant not found.", safe=False)
+        elif action == "get_all_restaurants":
+            for restaurant in restaurants_data:
+                restaurants_datas = {
+                    "id": restaurant["info"]["id"],
+                    "name": restaurant["info"]["name"],
+                    "locality": restaurant["info"]["locality"],
+                    "areaName": restaurant["info"]["areaName"],
+                    "cuisines": restaurant["info"]["cuisines"],
+                    "avgRating": restaurant["info"]["avgRating"],
+                    "totalRatingsString": restaurant["info"]["totalRatingsString"],
+                    "slaString": restaurant["info"]["sla"]["slaString"],
+                    "lastMileTravelString": restaurant["info"]["sla"][
+                        "lastMileTravelString"
+                    ],
+                }
+                finalRestaurant.append(restaurants_datas)
+                print(finalRestaurant)
+
+            return JsonResponse(finalRestaurant, safe=False)
+        else:
+            return JsonResponse(
+                "Sorry, I couldn't understand your request.", safe=False
+            )

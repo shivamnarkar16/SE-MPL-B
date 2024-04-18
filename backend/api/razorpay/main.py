@@ -40,3 +40,16 @@ class RazorPayClient:
                     "error": e,
                 }
             )
+
+    def get_all_payments(self):
+        try:
+            response = client.payment.fetch_all()
+            return response
+        except Exception as e:
+            raise ValidationError(
+                {
+                    "status_code": status.HTTP_400_BAD_REQUEST,
+                    "message": "Error Occured",
+                    "error": e,
+                }
+            )

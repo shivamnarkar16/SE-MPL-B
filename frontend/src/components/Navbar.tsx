@@ -13,15 +13,15 @@ import { useUserContext } from "@/context/User";
 
 const Navbar = () => {
   const { user } = useUserContext();
-  // console.log(user);
+  console.log(user);
   return (
     <div>
       <nav className="bg-slate-100/40 z-50 dark:bg-slate-800/40 backdrop-blur shadow-sm	 dark:text-white p-4 flex justify-between fixed w-full">
         <div className="flex items-center">
           <Link to={user ? "/dashboard" : "/"}>
             <h1 className="text-2xl font-bold ml-2 -tracking-[2px]">
-              Crave{" "}
-              <span className="dark:text-slate-400 text-slate-600"> Wave</span>
+              Dine{" "}
+              <span className="dark:text-slate-400 text-slate-600"> Smart</span>
             </h1>
           </Link>
         </div>
@@ -35,7 +35,7 @@ const Navbar = () => {
             </Link>
           )}
           {!user ? (
-            <Link to="/" className="mr-4">
+            <Link to="/about" className="mr-4">
               <Button variant={"link"}>About</Button>
             </Link>
           ) : (
@@ -75,7 +75,7 @@ const Navbar = () => {
               </Button>
             </Link>
           )}
-          {user?.isSuperUser && (
+          {user?.is_superuser && (
             <Link to={"/admin"}>
               <Button>Admin Panel</Button>
             </Link>

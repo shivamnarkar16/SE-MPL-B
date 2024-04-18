@@ -11,36 +11,68 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ("app", "__first__"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Transaction',
+            name="Transaction",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('payment_id', models.CharField(max_length=200, verbose_name='Payment ID')),
-                ('order_id', models.CharField(max_length=200, verbose_name='Order ID')),
-                ('signature', models.CharField(blank=True, max_length=500, null=True, verbose_name='Signature')),
-                ('amount', models.IntegerField(verbose_name='Amount')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "payment_id",
+                    models.CharField(max_length=200, verbose_name="Payment ID"),
+                ),
+                ("order_id", models.CharField(max_length=200, verbose_name="Order ID")),
+                (
+                    "signature",
+                    models.CharField(
+                        blank=True, max_length=500, null=True, verbose_name="Signature"
+                    ),
+                ),
+                ("amount", models.IntegerField(verbose_name="Amount")),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Order',
+            name="Order",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('foodId', models.CharField(max_length=200, null=True)),
-                ('name', models.CharField(max_length=200)),
-                ('category', models.CharField(max_length=200)),
-                ('isVeg', models.BooleanField(default=False)),
-                ('price', models.IntegerField()),
-                ('restaurantId', models.CharField(default='', max_length=200)),
-                ('quantity', models.IntegerField()),
-                ('imageId', models.CharField(max_length=200)),
-                ('paid', models.BooleanField(default=False)),
-                ('payment_id', models.CharField(max_length=200, null=True)),
-                ('userId', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("foodId", models.CharField(max_length=200, null=True)),
+                ("name", models.CharField(max_length=200)),
+                ("category", models.CharField(max_length=200)),
+                ("isVeg", models.BooleanField(default=False)),
+                ("price", models.IntegerField()),
+                ("restaurantId", models.CharField(default="", max_length=200)),
+                ("quantity", models.IntegerField()),
+                ("imageId", models.CharField(max_length=200)),
+                ("paid", models.BooleanField(default=False)),
+                ("payment_id", models.CharField(max_length=200, null=True)),
+                (
+                    "userId",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

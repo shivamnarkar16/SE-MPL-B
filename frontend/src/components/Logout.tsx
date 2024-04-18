@@ -21,7 +21,6 @@ export const Logout = () => {
           headers: { "Content-Type": "application/json" },
         });
         localStorage.removeItem("access_token");
-        console.log(localStorage.getItem("vite-ui-theme"));
         // localStorage.removeItem("refresh_token");
         axios.defaults.headers.common["Authorization"] = null;
         logout();

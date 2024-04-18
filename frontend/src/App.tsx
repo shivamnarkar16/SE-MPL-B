@@ -11,21 +11,28 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RestaurantMenu from "./components/RestaurantMenu";
 import Orders from "./components/Orders";
 import Success from "./components/Success";
+import AdminPanel from "./components/AdminPanel";
+import Chatbot from "./components/Chatbot";
+import About from "./components/About";
+import Contact from "./components/Contact";
 
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <UserProvider>
         <Navbar />
-
+        <Chatbot />
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="success" element={<Success />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/admin" element={<AdminPanel />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/restaurant/:id" element={<RestaurantMenu />} />
           </Route>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<Register />} />

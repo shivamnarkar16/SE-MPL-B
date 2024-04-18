@@ -116,7 +116,7 @@ const Orders = () => {
           });
         });
         paidOrders(orderArray);
-        updateOrders();
+
         // navigate("/success");
       })
       .catch((e) => {
@@ -138,7 +138,7 @@ const Orders = () => {
           key: "rzp_test_ayUd0ehWxUbVZE", // Enter the Key ID generated from the Dashboard
           amount: "505050", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
           currency: "INR",
-          name: "CraveWave",
+          name: "DineSmart",
           description: "Test Transaction",
           image:
             "https://www.adobe.com/content/dam/cc/us/en/creativecloud/design/discover/mascot-logo-design/mascot-logo-design_fb-img_1200x800.jpg",
@@ -153,7 +153,7 @@ const Orders = () => {
           },
           prefill: {
             name: "Shivam",
-            email: "contact@cravewave.com",
+            email: "contact@dinesmart.com",
             contact: "9999999999",
           },
           notes: {
@@ -194,6 +194,8 @@ const Orders = () => {
     })
       .then((response: any) => {
         console.log(response.data);
+        setLoading(true);
+        updateOrders();
       })
       .catch((e: Error) => {
         console.log(e);
@@ -207,9 +209,11 @@ const Orders = () => {
       <div className="flex flex-col  items-center  max-w-full p-4">
         <ScrollArea className=" md:h-[80svh] h-[60svh]">
           {orderss.length ? (
-            orderss?.map((order: OrderType) => (
-              <Order order={order} key={order.id} deleteOrder={deleteOrder} />
-            ))
+            orderss
+              ?.map((order: OrderType) => (
+                <Order order={order} key={order.id} deleteOrder={deleteOrder} />
+              ))
+              .reverse()
           ) : (
             <div className="h-full flex flex-col space-y-10 justify-center items-center w-full">
               <h1>No Orders Found</h1>
@@ -268,7 +272,10 @@ const Orders = () => {
                 : "0"}
             </h1>
           </div>
-          <Button className="mt-5 w-full" onClick={checkOut}>
+          <Button
+            className="mt-5 w-full cursor-pointer"
+            onClick={() => checkOut()}
+          >
             Checkout
           </Button>
         </div>

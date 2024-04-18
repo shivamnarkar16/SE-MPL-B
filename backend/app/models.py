@@ -4,19 +4,22 @@ from django.contrib.auth.models import User
 
 
 # Create your models here.
+
+
 class Order(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     foodId = models.CharField(max_length=200, null=True)
     name = models.CharField(max_length=200)
     category = models.CharField(max_length=200)
     isVeg = models.BooleanField(default=False)
-    price = models.IntegerField()
+    price = models.FloatField()
     restaurantId = models.CharField(max_length=200, default="")
     quantity = models.IntegerField()
     imageId = models.CharField(max_length=200)
     userId = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     paid = models.BooleanField(default=False)
     payment_id = models.CharField(max_length=200, null=True)
+    process = models.BooleanField(default=False)
 
     def __iter__(self):
         return iter(
@@ -55,3 +58,11 @@ class OrderUpdates(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    address = models.CharField(max_length=255, null=True, blank=True, default=None)
+    city = models.CharField(max_length=255, null=True, blank=True, default=None)
+    latitude = models.FloatField(null=True, blank=True, default=None)
+    longitude = models.FloatField(null=True, blank=True, default=None)

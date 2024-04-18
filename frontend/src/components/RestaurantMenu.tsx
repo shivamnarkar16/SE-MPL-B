@@ -17,6 +17,7 @@ import { User, useUserContext } from "@/context/User";
 import { request } from "@/lib/Request";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import Loading from "./Loading";
+import { Input } from "./ui/input";
 
 const RestaurantMenu = () => {
   const { id } = useParams(); // call useParams and get value of restaurant id using object destructuring
@@ -25,16 +26,18 @@ const RestaurantMenu = () => {
     RESTAURANT_TYPE_KEY,
     MENU_ITEM_TYPE_KEY,
   });
-
+  const [filterMenu, setFilterMenu] = useState();
   const [loading, setLoading] = useState(true);
   const { user, setOrdersData, orders } = useUserContext();
   const [order, setOrder] = useState([]);
   useEffect(() => {
     setTimeout(() => {
+      setFilterMenu(menuItems);
+
       setLoading(false);
     }, 4000);
     window.scrollTo(0, 0);
-  }, []);
+  }, [menuItems]);
 
   const [searchParams] = useSearchParams();
 
@@ -120,7 +123,7 @@ const RestaurantMenu = () => {
   };
 
   // console.log(restaurant);
-
+  console.log(filterMenu);
   return loading ? (
     <Loading />
   ) : !restaurant ? (
@@ -172,14 +175,28 @@ const RestaurantMenu = () => {
       <div className="restaurant-menu-content flex justify-center m-4">
         <div className="menu-items-container mt-2 md:max-w-[800px] w-full">
           <div className="menu-title-wrap p-5">
+            <Input
+              className="w-[500px] m-4 self-center"
+              placeholder="Enter your Favorite snack to pick"
+              onChange={(e) => {
+                const data = menuItems?.filter((item: ItemType) => {
+                  console.log(filterMenu);
+                  return item?.name
+                    .toLowerCase()
+                    .includes(e.target.value.toLowerCase());
+                });
+                console.log(data);
+                setFilterMenu(data);
+              }}
+            />
             <h3 className="menu-title text-zinc-600 text-center">
               Recommended{" "}
             </h3>
             <p className=" mt-2 text-center   ">{menuItems?.length} ITEMS</p>
           </div>
           <ScrollArea className="flex justify-between h-svh md:h-[50svh] w-full md:p-4 md:px-10 border rounded-xl flex-col ">
-            {menuItems ? (
-              menuItems?.map((item: ItemType) => (
+            {filterMenu.length > 0 ? (
+              filterMenu?.map((item: ItemType) => (
                 <div
                   className="w-svh flex  md:flex-row flex-col justify-between space-x-5 border m-3 p-4 rounded-lg"
                   key={item?.id}
@@ -269,7 +286,7 @@ const RestaurantMenu = () => {
               ))
             ) : (
               <div className="h-full w-full flex items-center justify-center">
-                <Loader2 className="animate-spin " />
+                No Menu Found :(
               </div>
             )}
           </ScrollArea>

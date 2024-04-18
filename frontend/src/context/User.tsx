@@ -7,7 +7,11 @@ type UserProps = {
   username: string;
   email: string;
   userid: number;
-  isSuperUser: boolean;
+  is_superuser: boolean;
+  address: string;
+  city: string;
+  latitude: string;
+  longitude: string;
 } | null;
 
 type LoginProps = {

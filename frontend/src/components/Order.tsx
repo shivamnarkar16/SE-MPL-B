@@ -17,6 +17,7 @@ interface Order {
   table?: number;
   restaurantId: number;
   paid: boolean;
+  process: boolean;
 }
 
 export const Order = ({
@@ -31,7 +32,11 @@ export const Order = ({
   return (
     <div key={order.id} className="m-2">
       <div className="p-4 flex relative lg:flex-row rounded-lg hover:bg-slate-300 dark:hover:bg-slate-800 transition  flex-col border mx-auto w-[50vw] justify-between ">
-        {order.paid ? (
+        {order.process ? (
+          <Badge className="absolute bottom-3 bg-green-600 dark:text-white">
+            Processed{" "}
+          </Badge>
+        ) : order.paid ? (
           <Badge
             variant={"default"}
             className="absolute top-2 right-2 bg-green-300 dark:bg-green-700 text-md dark:text-white"
