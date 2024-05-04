@@ -229,11 +229,11 @@ const Register = () => {
 
   return (
     <div>
-      <div className="h-[92vh] pt-24 flex flex-col justify-center items-center">
+      <div className="h-[100vh]  flex flex-col justify-center items-center pt-64 ">
         <h1 className="text-4xl font-bold text-center mb-4 p-10">Register</h1>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ">
             <FormField
               control={form.control}
               name="username"
@@ -355,7 +355,7 @@ const Register = () => {
                 )}
               />
             </div>
-            {isLoading ? <Loader2 /> : <Button type="submit">Submit</Button>}
+            {isLoading ? <Loader2 /> : <Button type="submit" >Submit</Button>}
           </form>
         </Form>
       </div>

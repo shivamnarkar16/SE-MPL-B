@@ -32,7 +32,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { useUserContext } from "@/context/User";
 import { Input } from "./ui/input";
-import { filterData } from "@/lib/utils";
 // import Navbar from "./Navbar";
 
 const Dashboard = () => {
@@ -66,7 +65,7 @@ const Dashboard = () => {
         setURL(
           `lat=${latitude}&lng=${longitude}&&submitAction=ENTER&restaurantId=`
         );
-
+        
         const jsonData = await json.json();
 
         // was showing an error of data fatching because sometime data coming from cards[1] sometime cards[2] and different on other times so me make a function and check which value of i gives data in cards[i]
@@ -105,9 +104,15 @@ const Dashboard = () => {
           className="w-[500px]"
           onChange={(e) => {
             const data = allRestaurant.filter((restaurant) => {
-              return restaurant?.info.name
-                .toLowerCase()
-                .includes(e.target.value.toLowerCase());
+              // return restaurant?.info.name
+              //   .toLowerCase()
+              //   .includes(e.target.value.toLowerCase());
+              if(restaurant?.info.name.toLowerCase().includes(e.target.value.toLowerCase())){
+                return restaurant;
+              }
+              // Filter the data using the cuisines array
+
+              
             });
             console.log(data);
             setFilterdRestaurant(data);

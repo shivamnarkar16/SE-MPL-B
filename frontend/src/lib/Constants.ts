@@ -1,5 +1,5 @@
 export const IMG_CDN_URL =
-  "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_1400,h_1400,c_fill/";
+  "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_1400,h_1400,c_fill/";
 
 export const BASE_API_URL =
   "https://instafood-server.vercel.app/api/restaurants?";
