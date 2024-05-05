@@ -88,6 +88,7 @@ pop-transition==1.1.2
 prompt-toolkit==3.0.43
 protobuf==3.12.4
 psutil==5.9.0
+psycopg==3.1.18
 ptyprocess==0.7.0
 pulsemixer==1.5.1
 pure-eval==0.2.2
