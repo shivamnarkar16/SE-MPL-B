@@ -3,6 +3,7 @@ import axios from "axios";
 import { useUserContext } from "@/context/User";
 import { useNavigate } from "react-router-dom";
 import { request } from "@/lib/Request";
+import Loading from "./Loading";
 
 export const Logout = () => {
   const { logout } = useUserContext();
@@ -25,13 +26,17 @@ export const Logout = () => {
         axios.defaults.headers.common["Authorization"] = null;
         logout();
         // window.location.href = "/login";
+        
         navigate("/login");
       } catch (e) {
         console.log("logout not working", e);
       }
     })();
   }, []);
-  return <div></div>;
+  return <div>
+        <Loading text="Logging Out "/>
+
+  </div>;
 };
 
 export default Logout;
