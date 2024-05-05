@@ -7,7 +7,6 @@ bcc==0.1.10
 beautifulsoup4==4.10.0
 black==21.10b0
 blinker==1.4
-brlapi==0.8.3
 certifi==2020.6.20
 chardet==4.0.0
 charset-normalizer==2.0.6
