@@ -15,9 +15,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
 import { useUserContext } from "@/context/User";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Toaster } from "./ui/sonner";
+import Loading from "./Loading";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
@@ -35,26 +36,41 @@ const Login = () => {
 
   const { login } = useUserContext();
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const isLoading = form.formState.isSubmitting;
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try{
+      setLoading(true)
     setError("");
     login(values);
+    }
+    catch(e:any){
+      setError("please Provide Correct Credentials")
+    }
 
+    
     // window.location.href = "/";
   };
   // const { toast } = useToast();
+ useEffect(()=>{
   error
-    ? toast.error("Please enter correct credentials", {
-        description: `${error}`,
-        action: {
-          label: "Close",
-          onClick: () => console.log("Close"),
-        },
-        duration: 2000,
-      })
-    : "";
-  return (
-    <>
+  ? toast.error("Please enter correct credentials", {
+      description: `${error}`,
+      action: {
+        label: "Close",
+        onClick: () => console.log("Close"),
+      },
+      duration: 2000,
+    })
+  : "";
+ },[error])
+
+    if (loading) {
+      return <Loading text="Logging In "/>
+    }
+    
+     return (
+   <>
       <div className="h-[92vh] flex flex-col justify-center items-center">
         <h1 className="text-4xl font-bold text-center mb-4 p-10">Login</h1>
         <Form {...form}>
@@ -91,7 +107,7 @@ const Login = () => {
                 </FormItem>
               )}
             />
-            {isLoading && error === "" ? (
+            {isLoading ? (
               <Button>
                 <Loader2 className="dark:text-slate-900 animate-spin " />
               </Button>
