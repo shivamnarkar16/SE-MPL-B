@@ -70,6 +70,10 @@ const Register = () => {
       label: "Mazgaon",
     },
     {
+      value: "Kanjurmarg",
+      label: "Kanjurmarg",
+    },
+    {
       value: "Churchgate",
       label: "Churchgate",
     },
