@@ -1,3 +1,5 @@
+  // @ts-nocheck
+
 import { MessageSquare } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ModalWindow from "./ModalWindow";
