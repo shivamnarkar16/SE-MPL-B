@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const baseURL = "https://dinesmart.up.railway.app";
+export const baseURL = "https://dinesmart.up.railway.app/";
 
 interface requestProps {
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";

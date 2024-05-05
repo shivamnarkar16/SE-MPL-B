@@ -218,7 +218,7 @@ const Register = () => {
       city: values.city,
     };
     request({
-      url: "/register",
+      url: "register",
       method: "POST",
       data: formValues,
     })
