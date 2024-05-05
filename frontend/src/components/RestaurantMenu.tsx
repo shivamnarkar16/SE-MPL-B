@@ -176,7 +176,7 @@ const RestaurantMenu = () => {
         <div className="menu-items-container mt-2 md:max-w-[800px] w-full">
           <div className="menu-title-wrap p-5">
             <Input
-              className="w-[500px] m-4 self-center"
+              className="md:w-[500px] w-full m-4 self-center"
               placeholder="Enter your Favorite snack to pick"
               onChange={(e) => {
                 const data = menuItems?.filter((item: ItemType) => {

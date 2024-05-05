@@ -101,7 +101,7 @@ const Dashboard = () => {
       <div className="p-5 flex space-x-3">
         <Input
           placeholder="Enter the restaurant you want...."
-          className="w-[500px]"
+          className="md:w-[500px] w-full m-2 "
           onChange={(e) => {
             const data = allRestaurant.filter((restaurant) => {
               // return restaurant?.info.name
