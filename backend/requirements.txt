@@ -5,3 +5,4 @@ python-dotenv==1.0.1
 Requests==2.31.0
 django-cors-headers==2.0.0
 whitenoise==6.6.0
+psycopg2==2.9.2
