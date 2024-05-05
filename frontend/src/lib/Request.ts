@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const baseURL = "http://localhost:8000/";
+export const baseURL = "https://se-mpl-b-production.up.railway.app/";
 
 interface requestProps {
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
